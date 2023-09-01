@@ -17,9 +17,21 @@ class MyApp(MDApp):
         self.to_rect.pos = instance.pos
         self.to_rect.size = instance.size
     def translate(self, event):
-        translator = Translator(to_lang='en')
-        translation = translator.translate(self.input_box.text)
-        self.output_box.text = translation
+        self.output_box.text = ""
+        self.error_label.text = ""
+        self.error_label.opacity = 0
+        original_text = self.input_box.text
+        if original_text != "":
+            try:
+                translator = Translator(to_lang=self.main_button2.text, from_lang=self.main_button1.text)
+                translation = translator.translate(original_text)
+                self.output_box.text = translation
+            except:
+                self.error_label.text = "Network error.",
+                self.error_label.opacity = 1
+        else:
+            self.error_label.text = "Please enter text to translate"
+            self.error_label.opacity = 1
 
     def build(self):
         self.root = MDRelativeLayout(md_bg_color=(0, 0, 0, 1))
@@ -80,6 +92,10 @@ class MyApp(MDApp):
                                     pos_hint={'center_x': 0.5, 'center_y': 0.25},
                                     font_size=30, height=250, readonly=True, hint_text='Translation')
         self.root.add_widget(self.output_box)
+
+        self.error_label = Label(text='', font_size=40, color=(1, 0, 0, 1), opacity=0,
+                                 pos_hint={'center_x': 0.5, 'center_y': 0.05})
+        self.root.add_widget(self.error_label)
 
         return self.root
 
